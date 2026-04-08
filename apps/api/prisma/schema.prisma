@@ -29,6 +29,11 @@ model OfframpOrder {
   status            OrderStatus @default(created)
 
   amountUsdc        Decimal
+
+  // Fiat payout details
+  payoutCurrency    String      @default("NGN")
+  payoutAmountFiat  Decimal?
+
   recipientName     String
   recipientAccount  String
   recipientBankCode String
@@ -37,8 +42,9 @@ model OfframpOrder {
   solanaSignature   String?     @unique
 
   // Paystack payout
-  paystackTransferId String?    @unique
-  paystackReference  String?    @unique
+  paystackRecipientCode String?
+  paystackTransferId    String? @unique
+  paystackReference     String? @unique
 
   metadata          Json?
 
