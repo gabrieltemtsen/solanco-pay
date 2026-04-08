@@ -1,0 +1,16 @@
+node_modules
+.pnpm-store
+.DS_Store
+.env
+.env.*
+dist
+build
+.next
+out
+coverage
+*.log
+
+# Solana / Anchor
+.target
+anchor/.anchor
+**/.anchor
