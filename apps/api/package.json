@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@solanco/config": "workspace:^",
     "fastify": "^5.4.0",
     "zod": "^4.3.6"
   },

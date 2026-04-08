@@ -34,6 +34,12 @@ model OfframpOrder {
   payoutCurrency    String      @default("NGN")
   payoutAmountFiat  Decimal?
 
+  // Pricing snapshot
+  fxUsdToNgn         Decimal?
+  spreadBps          Int?
+  flatFeeKobo        Int?
+  quoteExpiresAt     DateTime?
+
   recipientName     String
   recipientAccount  String
   recipientBankCode String
