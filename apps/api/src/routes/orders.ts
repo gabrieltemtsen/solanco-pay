@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { DEFAULT_PRICING_CONFIG } from '@solanco/config';
 import { z } from 'zod';
 import { prisma } from '../db.js';
+import { createUsdcDepositTokenAccount } from '../deposits.js';
 import { computeNgnPayoutFromUsdc } from '../pricing.js';
 import { getUsdToNgnRate } from '../rates/index.js';
 
@@ -56,6 +57,8 @@ export async function registerOrderRoutes(app: FastifyInstance) {
       return reply.code(400).send({ error: 'unsupported_currency', supported: ['NGN'] });
     }
 
+    const depositTokenAccount = await createUsdcDepositTokenAccount();
+
     const { rate, source, asOf } = await getUsdToNgnRate();
     const pricing = computeNgnPayoutFromUsdc({
       amountUsdc: body.amountUsdc,
@@ -74,6 +77,7 @@ export async function registerOrderRoutes(app: FastifyInstance) {
         spreadBps: pricing.spreadBps,
         flatFeeKobo: pricing.flatFeeKobo,
         quoteExpiresAt,
+        depositTokenAccount,
         recipientName: body.recipientName,
         recipientAccount: body.recipientAccount,
         recipientBankCode: body.recipientBankCode,
@@ -94,6 +98,7 @@ export async function registerOrderRoutes(app: FastifyInstance) {
         spreadBps: true,
         flatFeeKobo: true,
         quoteExpiresAt: true,
+        depositTokenAccount: true,
         recipientName: true,
         createdAt: true,
       },
@@ -116,6 +121,7 @@ export async function registerOrderRoutes(app: FastifyInstance) {
         recipientName: true,
         recipientAccount: true,
         recipientBankCode: true,
+        depositTokenAccount: true,
         solanaSignature: true,
         paystackReference: true,
         createdAt: true,

@@ -21,33 +21,33 @@ export async function registerQuicknodeRoutes(app: FastifyInstance) {
     const body = req.body as any;
 
     // Preferred: QuickNode webhook includes explicit fields.
+    // For unique deposit address per order, include the destination token account.
     const normalized = z
       .object({
         orderId: z.string().optional(),
         signature: z.string().optional(),
         amountUsdc: z.number().optional(),
         memo: z.string().optional(),
+        destinationTokenAccount: z.string().optional(),
       })
       .passthrough()
       .safeParse(body);
 
     let orderId: string | undefined = undefined;
     let signature: string | undefined = undefined;
+    let destinationTokenAccount: string | undefined = undefined;
 
     if (normalized.success) {
       orderId = normalized.data.orderId ?? normalized.data.memo;
       signature = normalized.data.signature;
-    }
-
-    if (!orderId || typeof orderId !== 'string') {
-      // If no orderId, just ack. (We can later attempt to parse memo from tx details.)
-      return reply.send({ received: true, ignored: 'missing_orderId' });
+      destinationTokenAccount = normalized.data.destinationTokenAccount;
     }
 
     // Update order as deposit confirmed. In later iterations we’ll validate signature + amounts.
     const updated = await prisma.offrampOrder.updateMany({
       where: {
-        id: orderId,
+        ...(orderId ? { id: orderId } : {}),
+        ...(destinationTokenAccount ? { depositTokenAccount: destinationTokenAccount } : {}),
         status: { in: ['awaiting_deposit', 'deposit_confirmed', 'payout_pending'] },
       },
       data: {
@@ -58,6 +58,10 @@ export async function registerQuicknodeRoutes(app: FastifyInstance) {
         },
       },
     });
+
+    if (updated.count === 0) {
+      return reply.send({ received: true, ignored: 'no_matching_order' });
+    }
 
     return reply.send({ received: true, updated: updated.count });
   });

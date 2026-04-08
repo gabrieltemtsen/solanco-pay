@@ -45,7 +45,8 @@ model OfframpOrder {
   recipientBankCode String
 
   // Solana deposit
-  solanaSignature   String?     @unique
+  depositTokenAccount String?   @unique
+  solanaSignature     String?   @unique
 
   // Paystack payout
   paystackRecipientCode String?
