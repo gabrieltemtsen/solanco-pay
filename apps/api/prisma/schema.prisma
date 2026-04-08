@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Minimal schema to unblock Milestone 1–2.
+// We’ll expand with provider ledger, audit log, and reconciliation tables.
+
+enum OrderStatus {
+  created
+  awaiting_deposit
+  deposit_confirmed
+  payout_pending
+  payout_submitted
+  payout_succeeded
+  payout_failed
+  cancelled
+}
+
+model OfframpOrder {
+  id                String      @id @default(cuid())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  status            OrderStatus @default(created)
+
+  amountUsdc        Decimal
+  recipientName     String
+  recipientAccount  String
+  recipientBankCode String
+
+  // Solana deposit
+  solanaSignature   String?     @unique
+
+  // Paystack payout
+  paystackTransferId String?    @unique
+  paystackReference  String?    @unique
+
+  metadata          Json?
+
+  @@index([status])
+}
