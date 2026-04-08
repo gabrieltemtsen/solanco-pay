@@ -3,6 +3,7 @@ import { prisma } from './db.js';
 import { registerOrderRoutes } from './routes/orders.js';
 import { registerWebhookRoutes } from './routes/webhooks.js';
 import { registerPayoutRoutes } from './routes/payout.js';
+import { registerQuicknodeRoutes } from './routes/quicknode.js';
 
 const app = Fastify({
   logger: true,
@@ -32,6 +33,7 @@ app.get('/health', async () => {
 await registerOrderRoutes(app);
 await registerPayoutRoutes(app);
 await registerWebhookRoutes(app);
+await registerQuicknodeRoutes(app);
 
 const port = Number(process.env.PORT ?? 3001);
 const host = process.env.HOST ?? '0.0.0.0';
