@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: solanco
-      POSTGRES_PASSWORD: solanco
-      POSTGRES_DB: solanco
+      POSTGRES_USER: ${POSTGRES_USER:-solanco}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_DB: ${POSTGRES_DB:-solanco}
     ports:
       - "5432:5432"
     volumes:
